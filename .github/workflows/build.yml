@@ -1,33 +1,33 @@
 name: Build APK
 on: [push, workflow_dispatch]
-
+ 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
+ 
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
-
+          python-version: "3.14"
+ 
       - name: Install system dependencies
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
-          sudo apt-get -o Acquire::Retries=5 -o Acquire::http::Timeout=30 update
-          sudo apt-get -o Acquire::Retries=5 -o Acquire::http::Timeout=30 install -y \
+          sudo apt-get -o Acquire::Retries=5 update
+          sudo apt-get -o Acquire::Retries=5 install -y \
             git zip unzip openjdk-17-jdk autoconf libtool pkg-config \
             zlib1g-dev libncurses-dev cmake libffi-dev libssl-dev build-essential ccache
-
+ 
       - name: Install Buildozer
         run: |
           pip install --upgrade pip
-          pip install buildozer "cython<3" setuptools
-
+          pip install buildozer legacy-cgi setuptools cython==0.29.34
+ 
       - name: Build APK
         run: buildozer -v android debug
-
+ 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
